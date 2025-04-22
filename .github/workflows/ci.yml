@@ -45,7 +45,13 @@ jobs:
       - name: Get npm cache directory path
         id: npmCacheDirPath
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-        run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+        run: |
+            dir=$(npm config get cache)
+            if [ -z "$dir" ]; then
+              echo "Error: npm cache directory path is empty." >&2
+              exit 1
+            fi
+            echo "dir=$dir" >> $GITHUB_OUTPUT
       - name: Cache npm directory
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         uses: actions/cache@v4
